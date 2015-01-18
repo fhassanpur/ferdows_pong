@@ -112,26 +112,16 @@ class FBall(FGameObject):
 
 	# The ball's new direction is based off where the ball lands on the paddle
 	# If the ball lands directly in the center of the paddle, it moves horizontally
-	# If the ball lands on the edge, it bounces 75 degrees perpidicular to the paddle
+	# If the ball lands on the edge, it bounces by 2 and 1 in between
 	def calculate_direction(self, paddle):
 		if self.y == paddle.y+paddle.h/2:
 			self.vy = 0
-		elif self.y < paddle.y+paddle.h/2 and self.y >= paddle.y+paddle.h/4:
+		elif self.y < paddle.y+paddle.h/2 and self.y >= paddle.y+paddle.h/4 or self.y > paddle.y+paddle.h/2 and self.y <= paddle.y+paddle.h/2+paddle.h/4:
 			if self.vy >= 0:
 				self.vy = 1
 			elif self.vy < 0:
 				self.vy = -1
-		elif self.y < paddle.y+paddle.h/4 and self.y >= paddle.y:
-			if self.vy >= 0:
-				self.vy = 2
-			elif self.vy < 0:
-				self.vy = -2
-		elif self.y > paddle.y+paddle.h/2 and self.y <= paddle.y+paddle.h/2+paddle.h/4:
-			if self.vy >= 0:
-				self.vy = 1
-			elif self.vy < 0:
-				self.vy = -1
-		elif self.y > paddle.y+paddle.h/2+paddle.h/4 and self.y <= paddle.y+paddle.h:
+		elif self.y < paddle.y+paddle.h/4 and self.y >= paddle.y or self.y > paddle.y+paddle.h/2+paddle.h/4 and self.y <= paddle.y+paddle.h:
 			if self.vy >= 0:
 				self.vy = 2
 			elif self.vy < 0:
