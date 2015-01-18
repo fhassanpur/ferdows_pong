@@ -13,14 +13,15 @@ class Game():
 	def start(self):
 		pygame.init()
 		pygame.font.init()
+		pygame.mixer.init()
+
+		# Window Resolution
 		width = 800
 		height = 600
 
-		self.clock = pygame.time.Clock()
 		self.running = True
 
 		self.screen = pygame.display.set_mode((width, height))
-
 		pygame.display.set_caption('FerdowsPong')
 
 		# Creates objects
@@ -31,14 +32,25 @@ class Game():
 		self.paddle_right.set_player_right()
 
 		# Hold is which paddle is aiming
-		self.left_hold = False
+		self.left_hold = True
 		self.right_hold = False
+
+		self.paddle_left.hold = True
+
+		self.ball_reset_pos_left()
 
 		# Creates labels
 		self.font = pygame.font.SysFont('Arial', 40)
 		self.title_label = self.font.render('FerdowsPong', 1, Game.COLOR_BLUE)
 		self.left_scr = 0
 		self.right_scr = 0
+
+		# Create sound
+		beep = pygame.mixer.Sound('res/beep.wav')
+		boop = pygame.mixer.Sound('res/boop.wav')
+		FBall.SOUND_PADDLE_HIT_0 = beep
+		FBall.SOUND_PADDLE_HIT_1 = boop
+		self.goal_sound = pygame.mixer.Sound('res/goal.wav')
 
 		self.update()
 
@@ -61,12 +73,14 @@ class Game():
 		self.ball.vy = 0
 
 	def left_score(self):
+		self.goal_sound.play()
 		self.left_scr += 1
 		self.ball_reset_pos_left()
 		self.paddle_left.hold = True
 		self.left_hold = True
 
 	def right_score(self):
+		self.goal_sound.play()
 		self.right_scr += 1
 		self.ball_reset_pos_right()
 		self.paddle_right.hold = True

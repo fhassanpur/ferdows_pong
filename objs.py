@@ -72,6 +72,9 @@ class FPaddle(FGameObject):
 
 # Pong ball class
 class FBall(FGameObject):
+	SOUND_PADDLE_HIT_0 = None
+	SOUND_PADDLE_HIT_1 = None
+	SOUND_CHOICE = 0
 
 	def __init__(self):
 		# Width and height used for collision detection, radius for rendering
@@ -98,6 +101,12 @@ class FBall(FGameObject):
 		self.reverse_direction_y()
 
 	def collide_paddle(self, paddle):
+		if FBall.SOUND_CHOICE == 0:
+			FBall.SOUND_PADDLE_HIT_0.play()
+			FBall.SOUND_CHOICE = 1
+		elif FBall.SOUND_CHOICE == 1:
+			FBall.SOUND_PADDLE_HIT_1.play()
+			FBall.SOUND_CHOICE = 0
 		self.reverse_direction_x()
 		self.calculate_direction(paddle)
 
