@@ -2,6 +2,7 @@ import pygame
 
 # Base game object class
 class FGameObject():
+	COLOR_WHITE = (255, 255, 255)
 
 	def __init__(self):
 		# Position and size members
@@ -17,8 +18,8 @@ class FGameObject():
 
 	def move(self):
 		# Add velocity to position
-		self.x = self.x + self.vx
-		self.y = self.y + self.vy
+		self.x += self.vx
+		self.y += self.vy
 
 	def update(self):
 		self.move()
@@ -28,8 +29,9 @@ class FPaddle(FGameObject):
 
 	def __init__(self):
 		FGameObject.__init__(self)
-		self.w = 50
+		self.w = 30
 		self.h = 125
+		self.hold = False
 
 	def set_player_left(self):
 		self.x = 50
@@ -40,12 +42,15 @@ class FPaddle(FGameObject):
 		self.y = 250
 
 	def move_up(self):
-		if self.y > 0:
-			self.vy = self.vy - 1
+		if self.y >= 0:
+			self.vy -= 1
 
 	def move_down(self):
-		if self.y < 800:
-			self.vy = self.vy + 1
+		if self.y <= 800:
+			self.vy += 1
+
+	def aim_ball(self, ball):
+		ball.y = self.y+self.h/2
 
 	def move(self):
 		FGameObject.move(self)
@@ -53,14 +58,17 @@ class FPaddle(FGameObject):
 	def check_ball_collision(self, ball):
 		if ball.y >= self.y and ball.y <= self.y+self.h:
 			if ball.x >= self.x and ball.x <= self.x+self.w:
-				ball.reverse_direction_x()
+				ball.collide_paddle(self)
 
 	def render(self, surface):
-		pygame.draw.rect(surface, (255, 255, 255), pygame.Rect(self.x, self.y, self.w, self.h))
+		pygame.draw.rect(surface, FGameObject.COLOR_WHITE, pygame.Rect(self.x, self.y, self.w, self.h))
 
 	def update(self, ball):
 		FGameObject.update(self)
-		self.check_ball_collision(ball)
+		if not self.hold:
+			self.check_ball_collision(ball)
+		else:
+			self.aim_ball(ball)
 
 # Pong ball class
 class FBall(FGameObject):
@@ -72,9 +80,13 @@ class FBall(FGameObject):
 		self.y = 300
 		self.w = 50
 		self.h = 50
-		self.r = 25
+		self.r = 20
 		self.vx = 1
 		self.vy = 1
+
+		# Pall is paused after goal, left or right paddle aims on hold
+		self.left_hold = False
+		self.right_hold = False
 
 	def reverse_direction_x(self):
 		self.vx = -self.vx
@@ -83,28 +95,48 @@ class FBall(FGameObject):
 		self.vy = -self.vy
 
 	def collide_wall(self):
-		reverse_direction_y()
+		self.reverse_direction_y()
 
 	def collide_paddle(self, paddle):
-		calculate_direction(paddle.y)
-		reverse_direction_x()
+		self.reverse_direction_x()
+		self.calculate_direction(paddle)
 
 	# The ball's new direction is based off where the ball lands on the paddle
 	# If the ball lands directly in the center of the paddle, it moves horizontally
 	# If the ball lands on the edge, it bounces 75 degrees perpidicular to the paddle
-	def calculate_direction(self, paddle_pos_y):
-		pass
+	def calculate_direction(self, paddle):
+		if self.y == paddle.y+paddle.h/2:
+			self.vy = 0
+		elif self.y < paddle.y+paddle.h/2 and self.y >= paddle.y+paddle.h/4:
+			if self.vy >= 0:
+				self.vy = 1
+			elif self.vy < 0:
+				self.vy = -1
+		elif self.y < paddle.y+paddle.h/4 and self.y >= paddle.y:
+			if self.vy >= 0:
+				self.vy = 2
+			elif self.vy < 0:
+				self.vy = -2
+		elif self.y > paddle.y+paddle.h/2 and self.y <= paddle.y+paddle.h/2+paddle.h/4:
+			if self.vy >= 0:
+				self.vy = 1
+			elif self.vy < 0:
+				self.vy = -1
+		elif self.y > paddle.y+paddle.h/2+paddle.h/4 and self.y <= paddle.y+paddle.h:
+			if self.vy >= 0:
+				self.vy = 2
+			elif self.vy < 0:
+				self.vy = -2
+
 
 	def render(self, surface):
-		pygame.draw.circle(surface, (255, 255, 255), (self.x, self.y), self.r)
+		pygame.draw.circle(surface, FGameObject.COLOR_WHITE, (self.x, self.y), self.r)
 
 	def move(self):
 		FGameObject.move(self)
 		if self.x <= 0:
 			pygame.event.post(pygame.event.Event(pygame.USEREVENT+2))
-			self.reverse_direction_x()
 		elif self.x >= 800:
 			pygame.event.post(pygame.event.Event(pygame.USEREVENT+1))
-			self.reverse_direction_x()
 		if self.y <= 0 or self.y >= 600:
-			self.reverse_direction_y()
+			self.collide_wall()
