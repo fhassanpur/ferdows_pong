@@ -1,3 +1,6 @@
+# Created by Ferdows Hassanpur
+# www.ferdows.me
+
 import sys, pygame
 from objs import FPaddle, FBall
 

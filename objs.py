@@ -1,3 +1,6 @@
+# Created by Ferdows Hassanpur
+# www.ferdows.me
+
 import pygame
 
 # Base game object class
