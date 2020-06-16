@@ -2,14 +2,16 @@
 
 FerdowsPong is a simple pong recreation written in Python.
 
-###How To Play###
+## How To Play
 
 Simple controls, W and S move left paddle up and down respectively. I and K move right paddle. When ball is held, the space bar serves the ball for both players.
 
-###Technologies Used###
+## Technologies Used
 
 -Python 2.7.9 (pygame does not support Python 3)<br />
 -pygame 1.9.1
+
+## How To Run
 
 To run, download then open a terminal/cmd window:
 
