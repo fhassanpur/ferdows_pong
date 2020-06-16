@@ -17,5 +17,3 @@ To run, download then open a terminal/cmd window:
   
 You must run with Python2.7 and have pygame1.9.1 installed.
 
-More information on www.ferdows.me/ferdowspong/
-
